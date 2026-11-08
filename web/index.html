@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0c0e14">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <meta name="description" content="Личный дневник сна: календарь, самочувствие, аналитика и рекомендации.">
+  <title>Дневник сна</title>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icons/icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="#calendar" aria-label="Дневник сна — главная">
+        <span class="brand-mark" aria-hidden="true">☾</span>
+        <span><strong>сон</strong><small>личный дневник</small></span>
+      </a>
+      <div class="topbar-right">
+        <span id="system-status" class="status-pill"><i></i><span>Локальное хранение</span></span>
+        <button id="install-button" class="icon-button install-button" type="button" hidden aria-label="Установить приложение">↓</button>
+      </div>
+    </header>
+
+    <main>
+      <section id="screen-calendar" class="screen active" aria-labelledby="page-title">
+        <div class="page-heading">
+          <div>
+            <p class="eyebrow">ТВОЙ РИТМ, ТВОИ НАБЛЮДЕНИЯ</p>
+            <h1 id="page-title">Дневник сна</h1>
+            <p class="subheading">Замечай закономерности и находи свой режим.</p>
+          </div>
+          <div class="moon-orbit" aria-hidden="true"><span>☾</span><i></i><b></b></div>
+        </div>
+
+        <section class="sleep-hero panel" aria-label="Текущая запись сна">
+          <div class="hero-copy">
+            <span id="session-label" class="eyebrow">ГОТОВ К НОВОЙ НОЧИ</span>
+            <h2 id="session-title">Пора отдыхать?</h2>
+            <p id="session-description">Нажми кнопку, когда будешь готов лечь спать.</p>
+          </div>
+          <div id="session-timer" class="session-timer" hidden>00:00:00</div>
+          <button id="sleep-toggle" class="primary-button" type="button">
+            <span class="button-icon">☾</span><span>Я ложусь спать</span>
+          </button>
+          <p id="tracking-hint" class="hero-footnote">На Android разблокировка экрана будет учитываться автоматически.</p>
+        </section>
+
+        <section class="calendar-panel panel" aria-labelledby="calendar-title">
+          <div class="section-head calendar-head">
+            <div><p class="eyebrow">ИСТОРИЯ</p><h2 id="calendar-title">Календарь</h2></div>
+            <div class="month-control">
+              <button id="month-prev" class="icon-button" type="button" aria-label="Предыдущий месяц">‹</button>
+              <strong id="month-label"></strong>
+              <button id="month-next" class="icon-button" type="button" aria-label="Следующий месяц">›</button>
+            </div>
+          </div>
+          <div class="calendar-grid weekday-row" aria-hidden="true">
+            <span>ПН</span><span>ВТ</span><span>СР</span><span>ЧТ</span><span>ПТ</span><span>СБ</span><span>ВС</span>
+          </div>
+          <div id="calendar-grid" class="calendar-grid days-grid" aria-label="Дни месяца"></div>
+          <div class="calendar-legend"><span><i class="legend-dot lavender"></i> Есть запись</span><span><i class="legend-dot green"></i> Заполнена анкета</span></div>
+        </section>
+
+        <section id="day-detail" class="day-detail" aria-live="polite"></section>
+      </section>
+
+      <section id="screen-analytics" class="screen" aria-labelledby="analytics-title" hidden>
+        <div class="page-heading compact-heading">
+          <div><p class="eyebrow">НЕ ИДЕАЛЬНЫЕ ЦИФРЫ, А ТВОИ НАБЛЮДЕНИЯ</p><h1 id="analytics-title">Аналитика</h1><p class="subheading">Смотри, что помогает тебе высыпаться.</p></div>
+        </div>
+        <div id="analytics-content" class="stack"></div>
+      </section>
+
+      <section id="screen-settings" class="screen" aria-labelledby="settings-title" hidden>
+        <div class="page-heading compact-heading">
+          <div><p class="eyebrow">ВСЁ ПОД ТВОИМ КОНТРОЛЕМ</p><h1 id="settings-title">Настройки</h1><p class="subheading">Данные остаются на этом устройстве.</p></div>
+        </div>
+        <div class="stack">
+          <article class="panel settings-card">
+            <span class="card-icon">⇩</span><div><h2>Экспорт в Excel</h2><p>Сохрани записи и ответы в книге .xlsx с отдельным листом анализа.</p></div>
+            <button id="export-xlsx" class="secondary-button full-button" type="button">Экспортировать .xlsx</button>
+          </article>
+          <article class="panel settings-card">
+            <span class="card-icon">◈</span><div><h2>Резервная копия</h2><p>JSON-копия позволяет перенести дневник на другое устройство или восстановить его позже.</p></div>
+            <div class="button-row"><button id="export-json" class="secondary-button" type="button">Скачать копию</button><label class="secondary-button file-button">Импортировать<input id="import-json" type="file" accept="application/json,.json" hidden></label></div>
+          </article>
+          <article class="panel settings-card">
+            <span class="card-icon">⌁</span><div><h2>Автоотслеживание Android</h2><p id="android-info">В Android-версии экранная разблокировка передаётся из системного компонента. В обычном браузере доступна ручная остановка записи.</p></div>
+            <div class="info-strip"><span class="info-dot"></span><span id="storage-info">База данных IndexedDB · только на этом устройстве</span></div>
+          </article>
+          <article class="panel settings-card">
+            <span class="card-icon">♡</span><div><h2>Конфиденциальность</h2><p>Дневник не отправляет записи на сервер. Очистка данных браузера или удаление приложения может удалить локальную базу — сохраняй резервную копию.</p></div>
+          </article>
+          <p class="version-note">Дневник сна · Hybrid 2.0 · Аналитика носит информационный характер и не заменяет медицинскую консультацию.</p>
+        </div>
+      </section>
+    </main>
+
+    <nav class="bottom-nav" aria-label="Основная навигация">
+      <button class="nav-item active" data-screen="calendar" type="button"><span>▦</span><small>Календарь</small></button>
+      <button class="nav-item" data-screen="analytics" type="button"><span>⌁</span><small>Аналитика</small></button>
+      <button class="nav-item" data-screen="settings" type="button"><span>⚙</span><small>Настройки</small></button>
+    </nav>
+  </div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="./xlsx.js" defer></script>
+  <script src="./app.js" defer></script>
+</body>
+</html>
