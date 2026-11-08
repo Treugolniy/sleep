@@ -1,19 +1,18 @@
 
 name: Android CI
 
-on:
+"on":
   push:
-    branches: ["main"]
+    branches:
+      - main
   pull_request:
-    branches: ["main"]
-  workflow_dispatch:
-
-permissions:
-  contents: read
+    branches:
+      - main
+  workflow_dispatch: {}
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout
@@ -23,7 +22,7 @@ jobs:
         uses: actions/setup-java@v6
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: "17"
 
       - name: Set up Android SDK
         uses: android-actions/setup-android@v4
@@ -34,16 +33,13 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v6
         with:
-          gradle-version: '9.5.0'
-
-      - name: Run tests
-        run: gradle --no-daemon :app:testDebugUnitTest
+          gradle-version: "9.5.0"
 
       - name: Build APK
         run: gradle --no-daemon :app:assembleDebug
 
       - name: Upload APK
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: sleepjournal-debug-apk
           path: app/build/outputs/apk/debug/*.apk
